@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const { Pool } = require('pg');
@@ -20,11 +22,11 @@ const port = 4000;
 // console.log('Generated secret key:', secret);
 // Database connection configuration
 const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'Test',
-    password: 'Password',
-    port: 5432,
+    user: process.env.USER,
+    host: process.env.HOST,
+    database: process.env.DATABASE,
+    password: process.env.PASSWORD,
+    port: process.env.DB_PORT || 5432
 });
 
 // Set EJS as the templating engine
@@ -113,6 +115,8 @@ app.post('/signup', async (req, res) => {
     }
 });
 
+const bcrypt = require('bcrypt');
+
 app.post('/login', async (req, res) => {
     const { username, password, profile } = req.body;
 
@@ -129,8 +133,10 @@ app.post('/login', async (req, res) => {
             const user = result.rows[0];
             const { password: storedPassword, profile: storedProfile } = user;
 
-            // Compare the provided password with the stored password in plain text
-            if (password === storedPassword && storedProfile === profile) {
+            // Use bcrypt to compare passwords (hashing is done during signup)
+            const isPasswordCorrect = await bcrypt.compare(password, storedPassword);
+
+            if (isPasswordCorrect && storedProfile === profile) {
                 let redirectUrl;
 
                 switch (storedProfile) {
@@ -153,14 +159,14 @@ app.post('/login', async (req, res) => {
                 // Directly redirect to the appropriate page
                 return res.redirect(redirectUrl);
             } else {
-                res.status(401).send('Invalid username, password, or profile');
+                return res.status(401).send('Invalid username, password, or profile');
             }
         } else {
-            res.status(401).send('Invalid username, password, or profile');
+            return res.status(401).send('Invalid username, password, or profile');
         }
     } catch (err) {
         console.error('Error executing query:', err.message);
-        res.status(500).send('Error logging in');
+        return res.status(500).send('Error logging in');
     } finally {
         if (client) client.release();
     }
