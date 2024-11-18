@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submission Result</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h2 id="resultTitle"></h2>
+        <p id="message"></p>
+        <a href="freight.html">Go Back</a>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const status = params.get('status');
+            const message = params.get('message');
+
+            const messageElement = document.getElementById('message');
+            const resultTitle = document.getElementById('resultTitle');
+
+            if (status === 'success') {
+                resultTitle.textContent = 'Submission Successful';
+                messageElement.textContent = message;
+                messageElement.classList.add('success');
+            } else if (status === 'error') {
+                resultTitle.textContent = 'Submission Error';
+                messageElement.textContent = message;
+                messageElement.classList.add('error');
+            }
+
+            // Show the message in a popup
+            alert(message);
+
+            // Optionally clear the URL parameters
+            history.replaceState({}, document.title, window.location.pathname);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Truck Details</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body id="search">
+    <!-- Home Button -->
+    <button class="home-button" onclick="window.location.href='loginform.html';">Home</button>
+
+    <!-- Back Button -->
+    <button class="back-button" onclick="window.history.back();">Back</button>
+
+    <!--Main Div Starts-->
+    <div class="container1">
+        <!--Left Part Start-->
+        <div class="sd1">
+            <h2>Add Truck Details</h2>
+            <form id="addTruckForm" action="/submit-truck-details" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="truckNo">Truck Number:</label>
+                    <input type="text" id="truckNo" name="truckNo" required>
+                </div>
+                <div class="form-group">
+                    <label for="doNumber">DO Number:</label>
+                    <input type="text" id="doNumber" name="doNumber" required>
+                </div>
+                <div class="form-group">
+                    <label for="current-time">Time:</label>
+                    <input type="text" id="current-time" name="time" readonly required>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Date:</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="driverName">Driver Name:</label>
+                    <input type="text" id="driverName" name="driverName" required>
+                </div>
+                <!-- <div class="form-group">
+                    <label for="vendor">Vendor (If applicable)</label>
+                    <input type="text" id="vendor" name="vendor" required>
+                </div> -->
+                <div class="form-group">
+                    <label for="companyName">Vendor (If applicable)</label>
+                    <select id="companyName" name="companyName" required>
+                        <option value="">Select Vendor </option>
+                        <!-- Options will be added dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="from_destination">Destination From:</label>
+                    <select id="from_destination" name="from_destination" required>
+                        <option value="">Select Destination From</option>
+                        <!-- Options will be added dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="destination_to">Destination To:</label>
+                    <select id="destination_to" name="destination_to" required>
+                        <option value="">Select Destination To</option>
+                        <!-- Options will be added dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="truckType">Truck Type</label>
+                    <select id="truckType" name="truckType" required>
+                        <option value="">Types</option>
+                        <option value="bag">Bag</option>
+                        <option value="bulker">Bulker</option>
+                        <option value="others">Others</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transactionStatus">Transaction Status</label>
+                    <select id="transactionStatus" name="transactionStatus" required>
+
+                        <option value="open" selected>Open</option>
+                        <option value="acknowledged">Acknowledged</option>
+                        <option value="acknowledged+billed">Acknowledged+Billed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="weight">Weight (tons):</label>
+                    <input type="number" id="weight" name="weight" required>
+                </div>
+                <div class="form-group">
+                    <label for="actualWeight">Actual Weight (tons):</label>
+                    <input type="number" id="actualWeight" name="actualWeight" required oninput="calculateDifference()">
+                </div>
+                
+                <div class="form-group">
+                    <label for="differenceWeight">Difference in Weight (tons):</label>
+                    <input type="number" id="differenceWeight" name="differenceWeight" required readonly>
+                </div>
+                <div class="form-group">
+                    <label for="freight">Freight:</label>
+                    <input type="number" id="freight" name="freight" required>
+                </div>
+                <div class="form-group">
+                    <label for="diesel">Diesel (Ltr):</label>
+                    <input type="number" id="diesel" name="diesel" required>
+                </div>
+                <div class="form-group">
+                    <label for="dieselSlipNumber">Diesel Slip Number:</label>
+                    <input type="number" id="dieselSlipNumber" name="dieselSlipNumber" required>
+                </div>
+                <div class="form-group">
+                    <label for="advance">Advance:</label>
+                    <input type="number" id="advance" name="advance" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="truckImage">Upload Truck Image:(Loading Advice)</label>
+                    <input type="file" id="truckImage" name="truckImage" accept="image/*" required>
+                </div>
+
+                <div class="form-group">
+                <label for="loadingAdvice">Loading Advice</label>
+                <input type="file" id="loadingAdvice" name="loadingAdvice" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <label for="invoiceCompany">Invoice-Company</label>
+                <input type="file" id="invoiceCompany" name="invoiceCompany" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <label for="weighmentSlip">Weighment Slip</label>
+                <input type="file" id="weighmentSlip" name="weighmentSlip" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <label for="others">Others</label>
+                <input type="file" id="others" name="others" accept="image/*" required>
+            </div>
+                <div class="form-group">
+                    <input type="submit" value="Submit">
+                </div>
+            </form>
+        </div>
+        <!--Left Part End-->
+    <!-- Part Start-->
+    <div class="nav-buttons sd2">
+        <a class="displaytab" href="freight.html">
+            <button type="button">Freight Master</button>
+        </a>
+        <a class="displaytab" href="vehicle.html">
+            <button type="button">Vehicle Master</button>
+        </a>
+        <a class="displaytab" href="vendor.html">
+            <button type="button">Vendor Master</button>
+        </a>
+        <a class="displaytab" href="searchByDate.html">
+            <button type="button">Reports</button>
+        </a>
+        <a class="displaytab" href="billing.html">
+            <button type="button">Billing</button>
+        </a>
+        <a class="displaytab" href="searchByTruck.html">
+            <button type="button">Search By Truck</button>
+        </a>
+        <div class="displaytab">
+            <button type="button" onclick="logout()">Logout</button>
+        </div>
+    </div>
+    
+
+    <div id="error-message" class="error-message"></div>
+    <table id="resultsTable" style="display: none;">
+        <thead>
+            <tr>
+                <th>Truck Number</th>
+                <th>Time</th>
+                <th>Date</th>
+                <th>Weight (tons)</th>
+                <th>Freight</th>
+                <th>Diesel (liters)</th>
+                <th>Advance</th>
+                <th>Driver Name</th>
+                <th>Destination From</th>
+                <th>Destination To</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Results will be inserted here -->
+        </tbody>
+    </table>
+    <script src="search.js"></script>
+    <script>
+
+    </script>
+</body>
+
+</html>

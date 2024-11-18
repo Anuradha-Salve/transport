@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup Result</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+    #resultTitle {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+    #message {
+      font-size: 1.2em;
+      margin-top: 20px;
+    }
+    #message.success {
+      color: green;
+    }
+    #message.error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 id="resultTitle"></h2>
+    <p id="message"></p>
+    <a href="/signupForm.html">Go Back</a>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if the URL has query parameters for status and message
+      const params = new URLSearchParams(window.location.search);
+      const status = params.get('status');
+      const message = params.get('message');
+
+      const messageElement = document.getElementById('message');
+      const resultTitle = document.getElementById('resultTitle');
+
+      if (status === 'success') {
+        resultTitle.textContent = 'Signup Successful';
+        messageElement.textContent = message;
+        messageElement.classList.add('success');
+        alert(message); // Show popup message
+      } else if (status === 'error') {
+        resultTitle.textContent = 'Signup Error';
+        messageElement.textContent = message;
+        messageElement.classList.add('error');
+        alert(message); // Show popup message
+      }
+
+      // Remove the message from the URL parameters to prevent it from showing on refresh
+      history.replaceState({}, document.title, window.location.pathname);
+    });
+  </script>
+</body>
+</html>

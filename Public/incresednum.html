@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incrementing Number</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #number {
+            font-size: 48px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="number">0</div>
+
+    <script>
+        // JavaScript code to increment the number
+        const target = 2021; // Target number
+        const duration = 1000; // Duration in milliseconds (1 second)
+        const startTime = performance.now(); // Record start time
+
+        function updateNumber(timestamp) {
+            // Calculate the elapsed time
+            const elapsed = timestamp - startTime;
+            
+            // Calculate the current count based on elapsed time
+            const progress = Math.min(elapsed / duration, 1); // Ensure progress does not exceed 1
+            const count = Math.floor(progress * target); // Calculate the current number
+
+            // Update the number displayed
+            document.getElementById('number').textContent = count;
+
+            // Continue updating until the target is reached
+            if (progress < 1) {
+                requestAnimationFrame(updateNumber);
+            }
+        }
+
+        // Start the animation
+        requestAnimationFrame(updateNumber);
+    </script>
+</body>
+</html>

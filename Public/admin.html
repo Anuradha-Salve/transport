@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+    <script src="script.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Truck Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group input[type="number"],
+        .form-group select,
+        .form-group input[type="file"] {
+            width: calc(100% - 10px);
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .form-group input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #resultsTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #resultsTable th,
+        #resultsTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        #resultsTable th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .download-button {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .download-button button {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Add Truck Details</h2>
+        <form id="addTruckForm" action="/submit-truck-details" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="truckNo">Truck Number:</label>
+                <input type="text" id="truckNo" name="truckNo" required>
+            </div>
+            <div class="form-group">
+                <label for="current-time">Time:</label>
+                <input type="text" id="current-time" name="time" readonly required>
+            </div>
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+            <div class="form-group">
+                <label for="weight">Weight (tons):</label>
+                <input type="number" id="weight" name="weight" required>
+            </div>
+            <div class="form-group">
+                <label for="freight">Freight:</label>
+                <input type="number" id="freight" name="freight" required>
+            </div>
+            <div class="form-group">
+                <label for="diesel">Petrol (liters):</label>
+                <input type="number" id="diesel" name="diesel" required>
+            </div>
+            <div class="form-group">
+                <label for="advance">Advance:</label>
+                <input type="number" id="advance" name="advance" required>
+            </div>
+            <div class="form-group">
+                <label for="driverName">Driver Name:</label>
+                <input type="text" id="driverName" name="driverName" required>
+            </div>
+            <div class="form-group">
+                <label for="destinationFrom">Destination From:</label>
+                <select id="destinationFrom" name="destinationFrom" required>
+                    <option value="">Select Destination From</option>
+                    <option value="Orient Cement">Orient Cement</option>
+                    <option value="Swargate">Swargate</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="destinationTo">Destination To:</label>
+                <select id="destinationTo" name="destinationTo" required>
+                    <option value="">Select Destination To</option>
+                    <option value="Balewadi Warehouse">Balewadi Warehouse</option>
+                    <option value="Swargate">Swargate</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="truckImage">Upload Truck Image:</label>
+                <input type="file" id="truckImage" name="truckImage" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Submit">
+            </div>
+        </form>
+    </div>
+
+    <div class="container">
+        <h2>Search Truck Details</h2>
+        <div class="form-group">
+            <label for="truck_No">Enter Truck Number:</label>
+            <input type="text" id="truck_No" name="truck_No">
+            <button type="button" onclick="searchTruck()">Search</button>
+        </div>
+        
+
+        <div class="download-button">
+            <button onclick="downloadExcel()">Download Excel</button>
+        </div>
+    </div>
+        <div id="error-message" class="error-message"></div>
+        <table id="resultsTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Truck Number</th>
+                    <th>Time</th>
+                    <th>Date</th>
+                    <th>Weight (tons)</th>
+                    <th>Freight</th>
+                    <th>Petrol (liters)</th>
+                    <th>Advance</th>
+                    <th>Driver Name</th>
+                    <th>Destination From</th>
+                    <th>Destination To</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Results will be inserted here -->
+            </tbody>
+        </table>
+        
+   
+
+    <script>
+        // Function to format time as hh:mm:ss
+        function formatTime(hours, minutes, seconds) {
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Update current time and date
+        function updateCurrentTime() {
+            let currentTimeInput = document.getElementById("current-time");
+            let dateInput = document.getElementById("date");
+
+            let now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            let seconds = now.getSeconds();
+
+            currentTimeInput.value = formatTime(hours, minutes, seconds);
+            dateInput.valueAsDate = new Date(); // Set current date
+        }
+
+        // Call updateCurrentTime immediately to show initial time and date
+        updateCurrentTime();
+
+        // Update current time and date every second (1000 ms)
+        setInterval(updateCurrentTime, 1000);
+
+        // Function to search truck details
+        async function searchTruck() {
+            const truckNo = document.getElementById('truck_No').value;
+            const errorMessage = document.getElementById('error-message');
+            const resultsTable = document.getElementById('resultsTable');
+            const tbody = resultsTable.querySelector('tbody');
+
+            // Clear previous results
+            tbody.innerHTML = '';
+            errorMessage.textContent = '';
+            resultsTable.style.display = 'none';
+
+            if (!truckNo) {
+                errorMessage.textContent = 'Please enter a truck number to search.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/search-truck?truck_No=${encodeURIComponent(truckNo)}`);
+                if (response.ok) {
+                    const truckDetailsList = await response.json();
+
+                    if (truckDetailsList.length > 0) {
+                        truckDetailsList.forEach(truckDetails => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${truckDetails.truck_no}</td>
+                                <td>${truckDetails.time}</td>
+                                <td>${truckDetails.date}</td>
+                                <td>${truckDetails.weight}</td>
+                                <td>${truckDetails.freight}</td>
+                                <td>${truckDetails.diesel}</td>
+                                <td>${truckDetails.advance}</td>
+                                <td>${truckDetails.driver_name}</td>
+                                <td>${truckDetails.destination_from}</td>
+                                <td>${truckDetails.destination_to}</td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                        resultsTable.style.display = 'table';
+                    } else {
+                        errorMessage.textContent = 'No details found for this truck number.';
+                    }
+                } else {
+                    const message = await response.text();
+                    errorMessage.textContent = message;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                errorMessage.textContent = 'Error searching for truck details';
+            }
+        }
+
+        // Function to download truck details as Excel
+async function downloadExcel() {
+    const truckNo = document.getElementById('truck_No').value;
+    const errorMessage = document.getElementById('error-message');
+
+    if (!truckNo) {
+        errorMessage.textContent = 'Please enter a truck number to search.';
+        return;
+    }
+
+    try {
+        const response = await fetch(`/search-truck/download?truck_No=${encodeURIComponent(truckNo)}`);
+        if (response.ok) {
+            const blob = await response.blob();
+            const fileName = 'truck_details.xlsx';
+            const a = document.createElement('a');
+            const url = window.URL.createObjectURL(blob);
+
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        } else {
+            const message = await response.text();
+            errorMessage.textContent = message;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        errorMessage.textContent = 'Error downloading truck details';
+    }
+}
+
+
+    </script>
+
+</body>
+
+</html>

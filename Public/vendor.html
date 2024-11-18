@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="style.css">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Form</title>
+</head>
+
+<body id="vendor">
+    <div class="container-vendor">
+        <!-- Home Button -->
+        <button class="home-button" onclick="window.location.href='loginform.html';">Home</button>
+
+        <!-- Back Button -->
+        <button class="back-button" onclick="window.history.back();">Back</button>
+        <h1>TDS Database</h1>
+        <form id="companyform">
+            <label for="companyName">Vendor Name:</label>
+            <input type="text" id="companyName" name="companyName" required>
+
+            <label for="companyOwner">Vendor Owner:</label>
+            <input type="text" id="companyOwner" name="companyOwner" required>
+
+            <label for="tdsRate">TDS Rate (%):</label>
+            <input type="number" id="tdsRate" name="tdsRate" step="0.01" required>
+
+            <label for="pan">PAN:</label>
+            <input type="number" id="pan" name="pan" required>
+
+            <label for="gst">GST:</label>
+            <input type="number" id="gst" name="gst" required>
+
+            <input type="submit" value="Submit">
+        </form>
+
+        <!-- <div class="upload-container">
+            <h2>Upload Excel File</h2>
+            <form id="uploadForm" enctype="multipart/form-data" method="POST" action="/upload">
+                <input type="file" id="excelFile" name="excelFile" accept=".xlsx" required>
+                <button type="submit">Upload Excel</button>
+            </form>
+        </div> -->
+
+        <div id="results">
+            <h2>Companies</h2>
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>Vendor Name</th>
+                        <th>Vendor Owner</th>
+                        <th>TDS Rate (%)</th>
+                        <th>GST</th>
+                        <th>PAN</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Results will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="vendor.js"></script>
+
+
+</body>
+
+</html>

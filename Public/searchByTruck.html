@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truck Details</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="searchBy.js" defer></script>
+</head>
+<body id="searchByTruck">
+    <button class="home-button" onclick="window.location.href='signUpForm.html';">Home</button>
+    <button class="back-button" onclick="window.history.back();">Back</button>
+
+    <div class="container-searchByTruck">
+        <h2>Search Truck Details</h2>
+        <div class="form-group">
+            <label for="truck_No">Enter Truck Number:</label>
+            <input type="text" id="truck_No" name="truck_No">
+            <button type="button" class="search-button" onclick="searchTruck()">Search</button>
+            <button type="button" class="search-button" onclick="searchTodayList()">Today's List</button>
+        </div>
+        
+        <div class="download-button">
+            <div class="dropdown-button">Download Options
+                <div class="dropdown-content">
+                    <a href="#" onclick="downloadExcel()">Download Truck Details</a>
+                    <a href="#" onclick="downloadTodayList()">Download Today's List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="error-message" class="error-message"></div>
+    <table id="resultsTable">
+        <thead>
+            <tr>
+                <td><input type="checkbox" class="truck-checkbox"></td>
+                <th>Id</th>
+                <th>Truck Number</th>
+                <th>Time</th>
+                <th>Date</th>
+                <th>Weight</th>
+                <th>Actual Weight</th>
+                <th>Differebce In Weight</th>
+                <th>Freight</th>
+                <th>Diesel</th>
+                <th>Advance</th>
+                <th>Driver Name</th>
+                <th>Destination From</th>
+                <th>Destination To</th>
+                <th>DO Number</th>
+                <th>Vendor</th>
+                <th>Truck Type</th>
+                <th>Transaction Status</th>
+                <th>Diesel Slip Number</th>
+                <th>edit</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Example rows (populate with actual data dynamically) -->
+            
+            <!-- More rows as needed -->
+        </tbody>
+    </table>
+    
+    <div class="generateExcel">
+        <button  class="generateExcel"   onclick="generateExcel()">Generate Bill</button>
+    </div>
+</body>
+</html>

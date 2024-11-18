@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+    <script src="script.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Form</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: url('Images/23416.jpg') no-repeat center center fixed;
+            background-size: cover; /* Cover the entire background */
+        }
+
+        .container {
+            max-width: 80%;
+            width: 100%;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+         /* Button styles for Back and Home */
+.back-button, .home-button {
+    position: absolute;
+    top: 20px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.back-button {
+    background-color: #008CBA;  background-color: #f44336;/* New background color for Back button */
+    color: white;
+    right: 20px; /* Move Back button to the right */
+}
+
+.back-button:hover {
+    background-color: #c62828;/* New hover color for Back button */
+}
+
+.home-button {
+    background-color: #008CBA;/* New background color for Home button */
+    color: white;
+    left: 20px; /* Move Home button to the left */
+}
+
+.home-button:hover {
+     
+    background-color: #007bb5;/* New hover color for Home button */
+}
+    </style>
+</head>
+
+<body>
+     <!-- Home Button -->
+     <button class="home-button" onclick="window.location.href='signUpForm.html';">Home</button>
+
+     <!-- Back Button -->
+     <button class="back-button" onclick="window.history.back();">Back</button>
+    <div class="container">
+        <h1>GST Database</h1>
+        <form id="companyform">
+            <label for="companyName">Company Name:</label>
+            <input type="text" id="companyName" name="companyName" required>
+
+            <label for="companyOwner">Company Owner:</label>
+            <input type="text" id="companyOwner" name="companyOwner" required>
+
+            <label for="gstNo">GST No:</label>
+            <input type="text" id="gstNo" name="gstNo" required>
+
+            <input type="submit" value="Submit">
+        </form>
+
+        <div id="results">
+            <h2>Companies</h2>
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>Company Name</th>
+                        <th>Company Owner</th>
+                        <th>GST No</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Results will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function fetchData() {
+            try {
+                const response = await fetch('/gstdata');
+                if (!response.ok) throw new Error('Network response was not ok');
+                const result = await response.json();
+
+                const tableBody = document.querySelector('#resultsTable tbody');
+                tableBody.innerHTML = ''; // Clear the table
+
+                result.gst_master.forEach(company => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${company.company_name}</td>
+                        <td>${company.company_owner}</td>
+                        <td>${company.gst_no}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+        }
+
+        // Fetch data on page load
+        document.addEventListener('DOMContentLoaded', fetchData);
+
+        // Handle form submission
+        document.getElementById('companyform').addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+
+            const formData = new FormData(this);
+            const data = new URLSearchParams(formData).toString();
+
+            try {
+                const response = await fetch('/submitGST', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: data
+                });
+
+                if (!response.ok) throw new Error('Network response was not ok');
+                const result = await response.json();
+
+                document.getElementById('companyName').value = '';
+                document.getElementById('companyOwner').value = '';
+                document.getElementById('gstNo').value = '';
+                // Refresh the data in the table after submission
+                fetchData();
+
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+        });
+    </script>
+</body>
+</html>

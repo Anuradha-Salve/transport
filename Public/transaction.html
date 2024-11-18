@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acknowledged Trucks</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Acknowledged Trucks</h1>
+    <table id="trucksTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Truck No</th>
+                <th>Time</th>
+                <th>Date</th>
+                <th>Weight</th>
+                <th>Actual Weight</th>
+                <th>Differebce In Weight</th>
+                <th>Freight</th>
+                <th>Diesel</th>
+                <th>Advance</th>
+                <th>Driver Name</th>
+                <th>Destination From</th>
+                <th>Destination To</th>
+                <th>DO Number</th>
+                <th>Vendor</th>
+                <th>Truck Type</th>
+                <th>Transaction Status</th>
+                <th>Diesel Slip Number</th>
+            </tr>
+        </thead>
+        <tbody id="trucksBody">
+            <!-- Data will be populated here -->
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/get-acknowledged-trucks');
+                if (!response.ok) throw new Error('Failed to fetch trucks');
+    
+                const trucks = await response.json();
+                const tbody = document.getElementById('trucksBody');
+    
+                trucks.forEach(truck => {
+                    const row = document.createElement('tr');
+                    
+                    // Ensure you match the order of fields here to the table columns
+                    const fields = [
+                        truck.id,
+                        truck.truck_no,
+                        truck.time,
+                        truck.date,
+                        truck.weight,
+                        truck.freight,
+                        truck.diesel,
+                        truck.advance,
+                        truck.driver_name,
+                        truck.destination_from,
+                        truck.destination_to,
+                        truck.do_number,
+                        truck.vendor,
+                        truck.truck_type,
+                        truck.transaction_status,
+                        truck.diesel_slip_number
+                    ];
+    
+                    fields.forEach(value => {
+                        const cell = document.createElement('td');
+                        cell.textContent = value;
+                        row.appendChild(cell);
+                    });
+                    
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading truck data:', error);
+            }
+        });
+    </script>
+    
+</body>
+</html>

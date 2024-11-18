@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    <link rel="stylesheet" href="style.css">
+    <script src="searchBy.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Truck Details by Date</title>
+</head>
+<body id="searchByDate">
+     <!-- Home Button -->
+     <button class="home-button" onclick="window.location.href='loginform.html';">Home</button>
+
+     <!-- Back Button -->
+     <button class="back-button" onclick="window.history.back();">Back</button>
+    <div class="container-searchByDate">
+        <h1>Reports</h1>
+        <h2>Search Truck Details by Date</h2>
+        <div class="form-group">
+            <label for="start-date">Start Date:</label>
+            <input type="date" id="start-date" name="start-date">
+            <label for="end-date">End Date:</label>
+            <input type="date" id="end-date" name="end-date">
+            <button type="button" class="search-button" onclick="searchDate()">Search</button>
+        </div>
+        <div class="download-button">
+            <button onclick="downloadExcels()">Download Excel</button>
+        </div>
+    </div>
+    <div id="error-message" class="error-message"></div>
+    <div class="table-wrapper">
+        <table id="resultsTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Truck Number</th>
+                    <th>Time</th>
+                    <th>Date</th>
+                    <th>Weight (tons)</th>
+                    <th>Actual Weight</th>
+                    <th>Differebce In Weight</th>
+                    <th>Freight</th>
+                    <th>Diesel (liters)</th>
+                    <th>Advance</th>
+                    <th>Driver Name</th>
+                    <th>Destination From</th>
+                    <th>Destination To</th>
+                    <th>DO Number</th>
+                    <th>Vendor</th>
+                    <th>Truck Type</th>
+                    <th>Transaction Status</th>
+                    <th>Diesel Slip Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Results will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

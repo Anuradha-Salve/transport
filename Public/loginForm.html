@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Form</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="logo-container">
+      <img src="Images/IMG-20240729-WA0002.jpg" alt="Logo" class="logo">
+    </div>
+    <h2>Login</h2>
+    <form action="/login" method="POST">
+      <div class="form-control">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      <div class="form-control">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <div class="form-group">
+        <label for="profile">Profile</label>
+        <select id="profile" name="profile" required>
+          <option value="loadingManager" selected>Loading Manager</option>
+          <option value="admin">Admin</option>
+          <option value="accountant">Accountant</option>
+          <option value="unloadingManager">Unloading Manager</option>
+        </select>
+      </div>
+      <button class="login-button" type="submit">Login</button>
+    </form>
+    <p>Don't have an account yet? <a href="/signUpForm.html">Signup</a></p>
+  </div>
+  <script src="login.js"></script>  
+  <script>// Hashing a password before storing it
+    const hashedPassword = await bcrypt.hash('myPlainPassword', 10);
+    
+    // Comparing passwords
+    const match = await bcrypt.compare('myPlainPassword', hashedPassword);</script>
+</body>
+</html>

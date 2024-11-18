@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup Form</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="logo-container">
+      <img src="Images/IMG-20240729-WA0002.jpg" alt="Logo" class="logo">
+    </div>
+    <h2>Signup</h2>
+   
+    <form  name="myForm"action="/signup" method="POST"  onsubmit="myFunction()">
+      <div class="form-control">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      <div class="form-group">
+        <label for="profile">Profile</label>
+        <select id="profile" name="profile" required>
+              <option value="loadingManager" selected>Loading Manager</option>
+          <option value="admin">Admin</option>
+          <option value="accountant">Accountant</option>
+          <option value="unloadingManager">Unloading Manager</option>
+        </select>
+      </div>
+      <button class="signup-button" type="submit">Signup</button>
+    </form>
+    <p>Already have an account? <a href="/loginForm.html">Login</a></p>
+  </div>
+  <!-- <script>
+    function myFunction() {
+      if(username)
+      alert("Sit back and relax. We would send you your credentials soon!");
+    }
+    </script> -->
+    
+</body>
+</html>
