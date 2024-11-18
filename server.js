@@ -115,8 +115,6 @@ app.post('/signup', async (req, res) => {
     }
 });
 
-const bcrypt = require('bcrypt');
-
 app.post('/login', async (req, res) => {
     const { username, password, profile } = req.body;
 
@@ -133,10 +131,8 @@ app.post('/login', async (req, res) => {
             const user = result.rows[0];
             const { password: storedPassword, profile: storedProfile } = user;
 
-            // Use bcrypt to compare passwords (hashing is done during signup)
-            const isPasswordCorrect = await bcrypt.compare(password, storedPassword);
-
-            if (isPasswordCorrect && storedProfile === profile) {
+            // Compare the provided password with the stored password in plain text
+            if (password === storedPassword && storedProfile === profile) {
                 let redirectUrl;
 
                 switch (storedProfile) {
@@ -159,14 +155,14 @@ app.post('/login', async (req, res) => {
                 // Directly redirect to the appropriate page
                 return res.redirect(redirectUrl);
             } else {
-                return res.status(401).send('Invalid username, password, or profile');
+                res.status(401).send('Invalid username, password, or profile');
             }
         } else {
-            return res.status(401).send('Invalid username, password, or profile');
+            res.status(401).send('Invalid username, password, or profile');
         }
     } catch (err) {
         console.error('Error executing query:', err.message);
-        return res.status(500).send('Error logging in');
+        res.status(500).send('Error logging in');
     } finally {
         if (client) client.release();
     }
