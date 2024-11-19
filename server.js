@@ -22,12 +22,27 @@ const port = 4000;
 // console.log('Generated secret key:', secret);
 // Database connection configuration
 const pool = new Pool({
-    user: process.env.USER,
-    host: process.env.HOST,
-    database: process.env.DATABASE,
-    password: process.env.PASSWORD,
-    port: process.env.DB_PORT || 5432
+    user: 'postgres',
+    host: '127.0.0.1',
+    database: 'Test',
+    password: 'Password',
+    port: 5432
 });
+
+
+const { Client } = require('pg');
+require('dotenv').config();
+
+const getConnection = () => {
+  return new Client({
+    connectionString: process.env.DATABASE_URL,  // Use connectionString with the URL
+    ssl: {
+      rejectUnauthorized: false // Necessary for some cloud providers (e.g., Heroku)
+    }
+  });
+};
+
+module.exports = getConnection;
 
 // Set EJS as the templating engine
 app.set('view engine', 'ejs');
@@ -117,52 +132,57 @@ app.post('/signup', async (req, res) => {
 
 app.post('/login', async (req, res) => {
     const { username, password, profile } = req.body;
+
     console.log('Login attempt:', { username, password, profile });
-  
+
     let client;
     try {
-      client = await pool.connect();
-      const result = await client.query('SELECT * FROM users WHERE username = $1', [username]);
-  
-      if (result.rows.length > 0) {
-        const user = result.rows[0];
-        const { password: storedPassword, profile: storedProfile } = user;
-  
-        if (password === storedPassword && storedProfile === profile) {
-          let redirectUrl;
-  
-          switch (storedProfile) {
-            case 'loadingManager':
-              redirectUrl = '/loadingManager.html';
-              break;
-            case 'admin':
-              redirectUrl = '/search.html';
-              break;
-            case 'accountant':
-              redirectUrl = '/search.html';
-              break;
-            case 'unloadingManager':
-              redirectUrl = '/unloadingManager.html';
-              break;
-            default:
-              return res.status(403).send('Access denied: unknown profile');
-          }
-  
-          return res.redirect(redirectUrl);
+        client = await pool.connect();
+        const result = await client.query('SELECT * FROM users WHERE username = $1', [username]);
+
+        console.log('Query result:', result.rows);
+
+        if (result.rows.length > 0) {
+            const user = result.rows[0];
+            const { password: storedPassword, profile: storedProfile } = user;
+
+            // Compare the provided password with the stored password in plain text
+            if (password === storedPassword && storedProfile === profile) {
+                let redirectUrl;
+
+                switch (storedProfile) {
+                    case 'loadingManager':
+                        redirectUrl = '/loadingManager.html';
+                        break;
+                    case 'admin':
+                        redirectUrl = '/search.html';
+                        break;
+                    case 'accountant':
+                        redirectUrl = '/search.html';
+                        break;
+                    case 'unloadingManager':
+                        redirectUrl = '/unloadingManager.html';
+                        break;
+                    default:
+                        return res.status(403).send('Access denied: unknown profile');
+                }
+
+                // Directly redirect to the appropriate page
+                return res.redirect(redirectUrl);
+            } else {
+                res.status(401).send('Invalid username, password, or profile');
+            }
         } else {
-          res.status(401).send('Invalid username, password, or profile');
+            res.status(401).send('Invalid username, password, or profile');
         }
-      } else {
-        res.status(401).send('Invalid username, password, or profile');
-      }
     } catch (err) {
-      console.error('Error executing query:', err);
-      res.status(500).send(`Error executing query: ${err.message}`);
+        console.error('Error executing query:', err.message);
+        res.status(500).send('Error logging in');
     } finally {
-      if (client) client.release();
+        if (client) client.release();
     }
-  });
-  
+});
+
 
 
 
