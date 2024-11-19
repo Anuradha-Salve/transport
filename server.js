@@ -21,13 +21,22 @@ const port = 4000;
 
 // console.log('Generated secret key:', secret);
 // Database connection configuration
-const pool = new Pool({
-    user: process.env.USER,
-    host: process.env.HOST,
-    database: process.env.DATABASE,
-    password: process.env.PASSWORD,
-    port: process.env.DB_PORT || 5432
+require('dotenv').config();
+
+const { Client } = require('pg');
+
+const client = new Client({
+  user: process.env.USER,
+  host: process.env.HOST,
+  database: process.env.DATABASE,
+  password: process.env.PASSWORD,
+  port: process.env.DB_PORT,
 });
+
+client.connect()
+  .then(() => console.log('Connected to the database'))
+  .catch(err => console.error('Database connection error', err.stack));
+
 
 // Set EJS as the templating engine
 app.set('view engine', 'ejs');
