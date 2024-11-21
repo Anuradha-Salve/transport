@@ -24,11 +24,12 @@ const port = 4000;
 require('dotenv').config();
 
 const pool = new Pool({
-    user: 'postgres',
-    host: '127.0.0.1',
-    database: 'Test',
-    password: 'Password',
-    port: 5432
+    user: process.env.USER,
+    host: process.env.HOST,
+    database: process.env.DATABASE,
+    password: process.env.PASSWORD,
+    port: process.env.DB_PORT,
+    ssl:{rejectUnauthorized: false}
 });
 
 
