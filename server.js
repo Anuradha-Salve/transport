@@ -12,6 +12,11 @@ const app = express();
 const { jsPDF } = require('jspdf');
 const pdf = require('html-pdf');
 const port = 4000;
+const { Client } = require('pg');
+const bcrypt = require('bcrypt');
+
+
+
 
 
 // const crypto = require('crypto');
@@ -21,7 +26,7 @@ const port = 4000;
 
 // console.log('Generated secret key:', secret);
 // Database connection configuration
-require('dotenv').config();
+
 
 const pool = new Pool({
     user: process.env.USER,
@@ -29,12 +34,11 @@ const pool = new Pool({
     database: process.env.DATABASE,
     password: process.env.PASSWORD,
     port: process.env.DB_PORT,
-    // ssl:{rejectUnauthorized: false}
+    ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
 });
 
 
-const { Client } = require('pg');
-require('dotenv').config();
+
 
 const getConnection = () => {
   return new Client({
@@ -54,49 +58,50 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 // Middleware setup
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'Public')));
+
 
 // Middleware to parse JSON requests
 app.use(express.json()); // Ensure the body is parsed as JSON
 // Serve static files from the 'public' directory
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'Public')));
 
 // Routes
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/Public/loginForm.html');
 });
 
-app.get('/login', (req, res) => {
+app.get('/signup', (req, res) => {
     res.sendFile(__dirname + '/Public/signUpForm.html');
 });
-app.get('/', (req, res) => {
+app.get('/admin', (req, res) => {
     res.sendFile(__dirname + '/Public/admin.html');
 });
 
-app.get('/login', (req, res) => {
+app.get('/serch', (req, res) => {
     res.sendFile(__dirname + '/Public/search.html');
 });
 
-app.get('/', (req, res) => {
+app.get('/freight', (req, res) => {
     res.sendFile(__dirname + '/Public/freight.html');
 });
-app.get('/', (req, res) => {
+app.get('/vehicle', (req, res) => {
     res.sendFile(__dirname + '/Public/vehicle.html');
 });
 
-app.get('/', (req, res) => {
+app.get('/vendor', (req, res) => {
     res.sendFile(__dirname + '/Public/vendor.html');
 });
 
-app.get('/', (req, res) => {
+app.get('/gst', (req, res) => {
     res.sendFile(__dirname + '/Public/GSTmaster.html');
 });
 
-app.get('/', (req, res) => {
+app.get('/bydate', (req, res) => {
     res.sendFile(__dirname + '/Public/searchByDate.html');
 });
 
-app.get('/', (req, res) => {
+app.get('/bytruck', (req, res) => {
     res.sendFile(__dirname + '/Public/searchByTruck.html');
 });
 
@@ -105,84 +110,201 @@ app.get('/', (req, res) => {
 
 
 
+// app.post('/signup', async (req, res) => {
+//     const { username, profile } = req.body;
+
+//     try {
+//         const client = await pool.connect();
+
+//         // Check if the username already exists
+//         const userCheckResult = await client.query('SELECT COUNT(*) FROM users WHERE username = $1', [username]);
+//         if (parseInt(userCheckResult.rows[0].count) > 0) {
+//             client.release();
+//             // Redirect to a page with error message
+//             return res.redirect('/result.html?status=error&message=Username already exists');
+//         }
+
+//         // Insert the new user
+//         await client.query('INSERT INTO users (username, profile, password) VALUES ($1, $2, $3)', [username, profile, 'defaultPassword']);
+//         client.release();
+//         console.log('User registered:', username);
+
+//         // Redirect to a page with success message
+//         res.redirect('/result.html?status=success&message=Sit back and relax. We will send your credentials to you soon!');
+//     } catch (err) {
+//         console.error('Error executing query', err);
+//         // Redirect to a page with server error message
+//         res.redirect('/result.html?status=error&message=Internal server error');
+//     }
+// });
+const saltRounds = 10;
+
 app.post('/signup', async (req, res) => {
-    const { username, profile } = req.body;
+  const { username, profile } = req.body;
+  const defaultPassword = 'defaultPassword';  // The default password you want to hash and store
 
-    try {
-        const client = await pool.connect();
-
-        // Check if the username already exists
-        const userCheckResult = await client.query('SELECT COUNT(*) FROM users WHERE username = $1', [username]);
-        if (parseInt(userCheckResult.rows[0].count) > 0) {
-            client.release();
-            // Redirect to a page with error message
-            return res.redirect('/result.html?status=error&message=Username already exists');
-        }
-
-        // Insert the new user
-        await client.query('INSERT INTO users (username, profile, password) VALUES ($1, $2, $3)', [username, profile, 'defaultPassword']);
-        client.release();
-        console.log('User registered:', username);
-
-        // Redirect to a page with success message
-        res.redirect('/result.html?status=success&message=Sit back and relax. We will send your credentials to you soon!');
-    } catch (err) {
-        console.error('Error executing query', err);
-        // Redirect to a page with server error message
-        res.redirect('/result.html?status=error&message=Internal server error');
-    }
-});
-
-app.post('/login', async (req, res) => {
-  const { username, password, profile } = req.body;
-  console.log('Login attempt:', { username, password, profile });
-
-  let client;
   try {
-    client = await pool.connect();
-    const result = await client.query('SELECT * FROM users WHERE username = $1', [username]);
+    const client = await pool.connect();
 
-    if (result.rows.length > 0) {
-      const user = result.rows[0];
-      const { password: storedPassword, profile: storedProfile } = user;
-
-      if (password === storedPassword && storedProfile === profile) {
-        let redirectUrl;
-
-        switch (storedProfile) {
-          case 'loadingManager':
-            redirectUrl = '/loadingManager.html';
-            break;
-          case 'admin':
-            redirectUrl = '/search.html';
-            break;
-          case 'accountant':
-            redirectUrl = '/search.html';
-            break;
-          case 'unloadingManager':
-            redirectUrl = '/unloadingManager.html';
-            break;
-          default:
-            return res.status(403).send('Access denied: unknown profile');
-        }
-
-        return res.redirect(redirectUrl);
-      } else {
-        res.status(401).send('Invalid username, password, or profile');
-      }
-    } else {
-      res.status(401).send('Invalid username, password, or profile');
+    // Check if the username already exists
+    const userCheckResult = await client.query('SELECT COUNT(*) FROM users WHERE username = $1', [username]);
+    if (parseInt(userCheckResult.rows[0].count) > 0) {
+      client.release();
+      return res.redirect('/result.html?status=error&message=Username already exists');
     }
+
+    // Hash the password before storing it
+    const hashedPassword = await bcrypt.hash(defaultPassword, saltRounds); // Hash the password
+
+    // Insert the new user with hashed password
+    await client.query('INSERT INTO users (username, profile, password) VALUES ($1, $2, $3)', [username, profile, hashedPassword]);
+    client.release();
+
+    console.log('User registered with hashed password:', username);
+    res.redirect('/result.html?status=success&message=User created with default credentials!');
   } catch (err) {
-    console.error('Error executing query:', err);
-    res.status(500).send(`Error executing query: ${err.message}`);
-  } finally {
-    if (client) client.release();
+    console.error('Error executing query', err);
+    res.redirect('/result.html?status=error&message=Internal server error');
   }
 });
 
+// app.post('/login', async (req, res) => {
+//   const { username, password, profile } = req.body;
+//   console.log('Login attempt:', { username, password, profile });
+
+//   let client;
+//   try {
+//     client = await pool.connect();
+//     const result = await client.query('SELECT * FROM users WHERE username = $1', [username]);
+
+//     if (result.rows.length > 0) {
+//       const user = result.rows[0];
+//       const { password: storedPassword, profile: storedProfile } = user;
+
+//       if (password === storedPassword && storedProfile === profile) {
+//         let redirectUrl;
+
+//         switch (storedProfile) {
+//           case 'loadingManager':
+//             redirectUrl = '/loadingManager.html';
+//             break;
+//           case 'admin':
+//             redirectUrl = '/search.html';
+//             break;
+//           case 'accountant':
+//             redirectUrl = '/search.html';
+//             break;
+//           case 'unloadingManager':
+//             redirectUrl = '/unloadingManager.html';
+//             break;
+//           default:
+//             return res.status(403).send('Access denied: unknown profile');
+//         }
+
+//         return res.redirect(redirectUrl);
+//       } else {
+//         res.status(401).send('Invalid username, password, or profile');
+//       }
+//     } else {
+//       res.status(401).send('Invalid username, password, or profile');
+//     }
+//   } catch (err) {
+//     console.error('Error executing query:', err);
+//     res.status(500).send(`Error executing query: ${err.message}`);
+//   } finally {
+//     if (client) client.release();
+//   }
+// });
 
 
+
+
+
+// Secret key for signing JWTs, should be kept safe and private
+
+const jwt = require('jsonwebtoken');
+
+// Secret key for JWT (use environment variable for production)
+const JWT_SECRET = process.env.JWT_SECRET || '11126f7f5eb25488c29b5dcb7912add8749d163af2d635c7919c190e555adb1020c8f4a166f45054c9de80b9cf33ff6b03999fd586552c24a1899fc614c40646';
+
+app.post('/login', async (req, res) => {
+    const { username, password, profile } = req.body;
+    console.log('Login attempt:', { username, profile });
+
+    let client;
+    try {
+        client = await pool.connect();
+        const result = await client.query('SELECT * FROM users WHERE username = $1', [username]);
+
+        if (result.rows.length > 0) {
+            const user = result.rows[0];
+            const { password: storedPassword, profile: storedProfile } = user;
+
+            // Use bcrypt to compare the entered password with the stored hashed password
+            const passwordMatch = await bcrypt.compare(password, storedPassword); // Compare plain-text entered password with hashed stored password
+
+            if (passwordMatch && storedProfile === profile) {
+                // Password matches and profile matches
+                const payload = { username: user.username, profile: user.profile };
+                const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+
+                // Send the token and profile in the response
+                res.json({
+                    status: 'success',
+                    message: 'Login successful',
+                    token: token,  // Send the token back to the client
+                    profile: user.profile, // Optionally send profile to the client as well
+                    
+                })
+               
+            } else {
+                console.log('Password or profile mismatch');
+                res.status(401).send('Invalid username, password, or profile');
+            }
+        } else {
+            res.status(401).send('Invalid username, password, or profile');
+        }
+    } catch (err) {
+        console.error('Error executing query:', err);
+        res.status(500).send(`Error executing query: ${err.message}`);
+    } finally {
+        if (client) client.release();
+    }
+});
+
+  
+
+// Middleware to protect routes
+const verifyToken = (req, res, next) => {
+  const token = req.headers['authorization']; // Token sent in the Authorization header (e.g., "Bearer <token>")
+
+  if (!token) {
+    return res.status(403).send('Access denied: No token provided');
+  }
+
+  // Remove "Bearer " from token if it is included in the header
+  const tokenWithoutBearer = token.startsWith('Bearer ') ? token.slice(7) : token;
+
+  // Verify the token
+  jwt.verify(tokenWithoutBearer, JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).send('Invalid or expired token');
+    }
+
+    // Token is valid, save decoded info (user data) for use in other routes
+    req.user = decoded; // Store user data in req.user
+    next(); // Proceed to the next middleware or route handler
+  });
+};
+
+// Example of a protected route
+app.get('/protectedRoute', verifyToken, (req, res) => {
+  // Access protected data here
+  res.json({
+    status: 'success',
+    message: `Hello, ${req.user.username}, you have access!`,
+  });
+});
 
 
 
