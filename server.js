@@ -779,7 +779,7 @@ app.post('/submitVehicle', async (req, res) => {
     const { truckNo, make, freight, companyOwner } = req.body;
 
     try {
-        // Insert the new vehicle into the database
+        // Insert the new vehicle into the ```database```
         await pool.query(
             'INSERT INTO vehicle_master (truck_no, make, freight, company_owner) VALUES ($1, $2, $3, $4)',
             [truckNo, make, parseFloat(freight), companyOwner]
