@@ -13,7 +13,8 @@ const { jsPDF } = require('jspdf');
 const pdf = require('html-pdf');
 const port = 4000;
 const { Client } = require('pg');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs'); // instead of require('bcrypt')
+
 
 
 
@@ -34,7 +35,7 @@ const pool = new Pool({
     database: process.env.DATABASE,
     password: process.env.PASSWORD,
     port: process.env.DB_PORT,
-    ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
+    
 });
 
 
@@ -42,7 +43,7 @@ const pool = new Pool({
 
 
 
-module.exports = getConnection;
+
 
 // Set EJS as the templating engine
 app.set('view engine', 'ejs');
